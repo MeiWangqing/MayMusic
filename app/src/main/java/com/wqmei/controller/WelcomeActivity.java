@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.wqmei.R;
@@ -11,6 +12,11 @@ import com.wqmei.R;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * author: wqmei
+ * date: 2018/4/21 11:11
+ * description: 欢迎页面
+ */
 public class WelcomeActivity extends AppCompatActivity {
 
     @Override
@@ -18,9 +24,20 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         TextView textView = findViewById(R.id.welcome_text);
-        textView.setTypeface(Typeface.createFromAsset(this.getAssets(),"font/fangzhengxiuke.ttf"));
+        textView.setTypeface(Typeface.createFromAsset(this.getAssets(),"fonts/fangzhengxiuke.ttf"));
         //一定时间跳转
         goMainPage();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        //返回键结束程序
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+        {
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**

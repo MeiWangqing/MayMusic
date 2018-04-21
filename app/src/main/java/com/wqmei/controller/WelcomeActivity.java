@@ -53,6 +53,7 @@ public class WelcomeActivity extends AppCompatActivity {
             {
                 Intent intent = new Intent(WelcomeActivity.this,SearchActivity.class);
                 startActivity(intent);
+                finish();
             }
         };
         //3.5秒后启动

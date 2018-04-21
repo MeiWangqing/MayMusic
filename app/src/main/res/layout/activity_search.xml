@@ -9,30 +9,35 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_margin="10dp">
+        android:layout_margin="10dp"
+        android:orientation="vertical">
         <!--搜索框-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:orientation="horizontal"
             android:weightSum="1">
+
             <EditText
+                android:id="@+id/search_text"
                 android:layout_width="200dp"
                 android:layout_height="50dp"
-                android:textSize="20dp"
                 android:layout_weight="0.8"
-                android:singleLine="true"
                 android:ellipsize="end"
-                android:textColor="@android:color/tertiary_text_dark"/>
+                android:singleLine="true"
+                android:textColor="@android:color/tertiary_text_dark"
+                android:textSize="20dp" />
 
             <Button
+                android:id="@+id/search_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
+                android:layout_weight="0.2"
                 android:gravity="center"
-                android:text="搜索"
-                android:layout_weight="0.2"/>
+                android:text="搜索" />
 
 
         </LinearLayout>
@@ -40,13 +45,43 @@
         <!--歌曲列表-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
             <ListView
+                android:id="@+id/song_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/song_list">
+                android:layout_height="wrap_content">
 
             </ListView>
+        </LinearLayout>
+
+
+        <!--底部音乐状态栏-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:weightSum="10">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="2" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="6" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="暂停"
+                android:id="@+id/pause_btn"/>
+
         </LinearLayout>
 
     </LinearLayout>

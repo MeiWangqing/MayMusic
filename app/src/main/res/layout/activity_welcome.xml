@@ -23,7 +23,7 @@
                 android:layout_height="254dp"
                 android:layout_gravity="center"
                 android:src="@drawable/welcome"
-                android:layout_marginTop="50dp"/>
+                android:layout_marginTop="80dp"/>
         </LinearLayout>
 
         <LinearLayout

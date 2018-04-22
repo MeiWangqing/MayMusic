@@ -1,6 +1,7 @@
 package com.wqmei.controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -27,6 +28,7 @@ import com.wqmei.adapter.MusicAdapter;
 import com.wqmei.entity.Music;
 import com.wqmei.service.SearchService;
 import com.wqmei.service.impl.SearchServiceImpl;
+import com.wqmei.template.MusicState;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,9 +40,10 @@ import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener
 {
-
     public static Context context;//上下文
-    private MediaPlayer mediaPlayer;//音乐播放
+    public static MediaPlayer mediaPlayer = null;//音乐播放
+    public static Music currentMusic = null;//当前音乐
+
     private Button searchButton;//搜索按钮
     private EditText searchText;//搜索的字符串
     private ListView listView;//歌曲列表
@@ -76,6 +79,48 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
         initPauseBtn();
         initSearchModule();
         initListView();
+        initBottomGoToNextPage();
+    }
+
+    /**
+     * 绑定跳转
+     */
+    private void initBottomGoToNextPage()
+    {
+        songImgBottom.setOnClickListener((v)->
+        {
+            if (currentMusic != null)
+            {
+                Intent intent = new Intent(SearchActivity.this,MusicActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
+        songInfoTextBottom.setOnClickListener((v)->
+        {
+            if (currentMusic != null)
+            {
+                Intent intent = new Intent(SearchActivity.this, MusicActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 1)
+        {
+            //更改按钮
+            if (MusicState.state == MusicState.stop)
+            {
+                pauseBtn.setText("播放");
+            }else
+            {
+                pauseBtn.setText("暂停");
+            }
+
+        }
     }
 
     /**
@@ -88,36 +133,51 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
          */
         listView.setOnItemClickListener((parent, view, position, id) ->
         {
-            Music music = (Music) parent.getItemAtPosition(position);
-            if (music != null && music.getId() != null)
+            new Thread(() ->
             {
-                //弹出
-                Toast.makeText(SearchActivity.this, "开始播放： " + music.getName(), Toast.LENGTH_SHORT).show();
-                if (mediaPlayer != null)
+                Music music = (Music) parent.getItemAtPosition(position);
+                if (music != null && music.getId() != null)
                 {
-                    mediaPlayer.stop();
-                    mediaPlayer.reset();
-                } else
-                {
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_SYSTEM);
-                    mediaPlayer.setOnBufferingUpdateListener(SearchActivity.this);
-                    mediaPlayer.setOnPreparedListener(SearchActivity.this);
+                    currentMusic = music;
+                    if (mediaPlayer != null)
+                    {
+                        mediaPlayer.stop();
+                        mediaPlayer.reset();
+                    } else
+                    {
+                        mediaPlayer = new MediaPlayer();
+                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_SYSTEM);
+                        mediaPlayer.setOnBufferingUpdateListener(SearchActivity.this);
+                        mediaPlayer.setOnPreparedListener(SearchActivity.this);
+                    }
+                    Log.i("INFO", "现在播放的歌曲信息: " + music.toString());
+                    handler.post(() ->
+                    {
+                        try
+                        {
+                            mediaPlayer.setDataSource("http://music.163.com/song/media/outer/url?id=" + music.getId() + ".mp3");
+                            mediaPlayer.prepare();
+                            mediaPlayer.start();
+                            showToast(music);
+                            resetPause();
+                            setBottomInfo(music.getImageUrl(), music.getName() + " - " + music.getSinger());
+
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    });
                 }
-                Log.i("INFO", "现在播放的歌曲信息: " + music.toString());
-                try
-                {
-                    mediaPlayer.setDataSource("http://music.163.com/song/media/outer/url?id=" + music.getId() + ".mp3");
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    resetPause();
-                    setBottomInfo(music.getImageUrl(), music.getName() + " - " + music.getSinger());
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
+            }).start();
+
         });
+    }
+
+
+    private void showToast(Music music)
+    {
+        //弹出
+        Toast.makeText(SearchActivity.this, "开始播放： " + music.getName(), Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -128,30 +188,36 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
         //暂停播放的转化
         pauseBtn.setOnClickListener((v) ->
         {
-            if ("暂停".equals(pauseBtn.getText()))
+            Log.i("INFO", "搜索页面点击暂停按钮,此时状态为: "+MusicState.state);
+            //执行播放
+            if (MusicState.state == MusicState.stop)
             {
+                if (mediaPlayer != null)
+                {
+                    mediaPlayer.start();
+                    pauseBtn.setText("暂停");
+                    //切换状态
+                    MusicState.changeState();
+                }
+            } else if (MusicState.state == MusicState.play)
+            {
+                //执行暂停
                 if (mediaPlayer != null && mediaPlayer.isPlaying())
                 {
                     mediaPlayer.pause();
                     pauseBtn.setText("播放");
-                }
-            } else if ("播放".equals(pauseBtn.getText()))
-            {
-                if (mediaPlayer != null && !mediaPlayer.isPlaying())
-                {
-                    mediaPlayer.start();
-                    pauseBtn.setText("暂停");
+                    MusicState.changeState();
                 }
             }
-
         });
     }
 
     /**
-     *
+     *切歌,重置按钮状态
      */
     private void resetPause()
     {
+        MusicState.state = MusicState.play;
         pauseBtn.setText("暂停");
     }
 
@@ -165,7 +231,7 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
     {
         String spaceStr = "        ";
         //设置文字
-        songInfoTextBottom.setText(songInfo + spaceStr + songInfo + spaceStr + songInfo + spaceStr);
+        songInfoTextBottom.setText(songInfo);
 
         new Thread(() ->
         {
@@ -188,7 +254,8 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
                 inputStream = connection.getInputStream();
                 //读取文件
                 bitmap = BitmapFactory.decodeStream(inputStream);
-
+                //设置属性
+                currentMusic.setBitmap(bitmap);
             } catch (MalformedURLException e)
             {
                 e.printStackTrace();

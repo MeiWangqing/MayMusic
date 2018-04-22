@@ -15,5 +15,6 @@
         android:layout_weight="0.5"
         android:id="@+id/singer_name"
         android:layout_gravity="right"
-        android:gravity="right|center"/>
+        android:gravity="right|center"
+        android:ellipsize="start"/>
 </LinearLayout>

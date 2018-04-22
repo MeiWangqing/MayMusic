@@ -13,6 +13,8 @@ import com.wqmei.R;
 import com.wqmei.entity.Music;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * author: wqmei
@@ -47,7 +49,14 @@ public class MusicAdapter extends ArrayAdapter<Music>
         songNameView.setText(music.getName());
         //歌手名
         TextView singerNameView = view.findViewById(R.id.singer_name);
-        singerNameView.setText(music.getSinger());
+        String singerName = music.getSinger();
+        //匹配查看,如果超过3个人则后续用...表示
+        Matcher matcher = Pattern.compile("(.+?/.+?/.+?/).+").matcher(singerName);
+        if (matcher.find())
+        {
+            singerName = matcher.group(1) + "...";
+        }
+        singerNameView.setText(singerName);
         return view;
     }
 }

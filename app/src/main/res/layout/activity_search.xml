@@ -9,7 +9,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:paddingBottom="5dp"
         android:orientation="vertical">
         <!--搜索框-->
         <LinearLayout
@@ -86,8 +89,9 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:scrollbarAlwaysDrawHorizontalTrack="true"
-                android:text="歌名 - 歌手    歌名 - 歌手    歌名 - 歌手    歌名 - 歌手    歌名 - 歌手    歌名 - 歌手    "
+                android:text="歌名 - 歌手"
                 android:layout_gravity="center"
+                android:gravity="center"
                 />
 
             <Button
@@ -96,6 +100,7 @@
                 android:layout_weight="2"
                 android:text="暂停"
                 android:id="@+id/pause_btn"/>
+
 
         </LinearLayout>
 

@@ -53,6 +53,9 @@ public class WelcomeActivity extends AppCompatActivity {
             {
                 Intent intent = new Intent(WelcomeActivity.this,SearchActivity.class);
                 startActivity(intent);
+                //测试启动音乐详情页面
+                /*Intent intent = new Intent(WelcomeActivity.this, MusicActivity.class);
+                startActivity(intent);*/
                 finish();
             }
         };

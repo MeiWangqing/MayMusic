@@ -146,10 +146,12 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
                     } else
                     {
                         mediaPlayer = new MediaPlayer();
-                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_SYSTEM);
+                        //设置为媒体音量
+                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         mediaPlayer.setOnBufferingUpdateListener(SearchActivity.this);
                         mediaPlayer.setOnPreparedListener(SearchActivity.this);
                     }
+                    new Thread(()->searchService.searchLyric(requestQueue,music)).start();
                     Log.i("INFO", "现在播放的歌曲信息: " + music.toString());
                     handler.post(() ->
                     {

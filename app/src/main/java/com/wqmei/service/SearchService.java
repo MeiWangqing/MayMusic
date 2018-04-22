@@ -2,6 +2,7 @@ package com.wqmei.service;
 
 import com.android.volley.RequestQueue;
 import com.wqmei.controller.SearchActivity;
+import com.wqmei.entity.Music;
 
 /**
  * author: wqmei
@@ -11,4 +12,6 @@ import com.wqmei.controller.SearchActivity;
 public interface SearchService
 {
     void searchSongsByKeyword(String keyword, RequestQueue requestQueue, SearchActivity searchActivity);
+
+    void searchLyric(RequestQueue requestQueue, Music music);
 }

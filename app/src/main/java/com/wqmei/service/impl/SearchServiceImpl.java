@@ -1,5 +1,6 @@
 package com.wqmei.service.impl;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONArray;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * author: wqmei
@@ -73,6 +76,30 @@ public class SearchServiceImpl implements SearchService
         }
     }
 
+    /**
+     * 搜索歌词
+     * @param requestQueue
+     * @param music
+     */
+    @Override
+    public void searchLyric(RequestQueue requestQueue, Music music)
+    {
+        Log.i("INFO","进入解析歌词");
+        Integer songId = music.getId();
+        String url = "http://music.163.com/api/song/media?id=" + songId;
+        StringRequest stringRequest = new StringRequest(url,response ->
+        {
+            //解析
+            JSONObject jsonObject = JSONObject.parseObject(response);
+            String lyricStr = jsonObject.getString("lyric");
+            Matcher matcher = Pattern.compile("\\[\\d{2}:\\d{2}.\\d{2}\\](.+?)\\\\n").matcher(lyricStr);
+            while (matcher.find())
+            {
+                Log.i("INFO",matcher.group(1));
+            }
+        },error -> Log.e("ERROR", error.getMessage(),error));
+        requestQueue.add(stringRequest);
+    }
 
 
     /**

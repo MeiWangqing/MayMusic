@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -39,6 +40,7 @@ public class MusicActivity extends AppCompatActivity
         musicImg = findViewById(R.id.music_detail_img);
         musicDetailPauseBtn = findViewById(R.id.music_detail_pause_btn);
 
+        //musicImg.setVisibility(View.GONE);
         initTitle();
         initImg();
         initButton();

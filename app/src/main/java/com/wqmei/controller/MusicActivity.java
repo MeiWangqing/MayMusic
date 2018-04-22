@@ -1,6 +1,7 @@
 package com.wqmei.controller;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,12 +14,20 @@ import com.wqmei.entity.Music;
 import com.wqmei.template.MusicState;
 import com.wqmei.util.CircleImageView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MusicActivity extends AppCompatActivity
 {
     private TextView musicDetailTitleText;
     private CircleImageView musicImg;
     private Music music = SearchActivity.currentMusic;
     private Button musicDetailPauseBtn;
+
+    private Handler handler = new Handler();
+
+    private Timer timer = null;
+    private boolean rotationFlag = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,6 +42,41 @@ public class MusicActivity extends AppCompatActivity
         initTitle();
         initImg();
         initButton();
+        rotation();
+    }
+
+    /**
+     * 旋转,在播放时执行
+     */
+    private void rotation()
+    {
+        if (MusicState.state == MusicState.play)
+        {
+            timer = new Timer();
+            timer.schedule(new TimerTask()
+            {
+                @Override
+                public void run()
+                {
+                    float rotation = musicImg.getRotation();
+                    rotation = (rotation + 0.1f) % 360;
+                    //rotation = (rotation + 0.6f) % 360;
+                    float finalRotation = rotation;
+                    handler.post(()->
+                    {
+                        musicImg.setRotation(finalRotation);
+                    });
+                }
+            }, 0, 10);
+        }
+    }
+
+    /**
+     * 暂停旋转
+     */
+    private void cancelRotation()
+    {
+        timer.cancel();
     }
 
     /**
@@ -59,6 +103,7 @@ public class MusicActivity extends AppCompatActivity
                     SearchActivity.mediaPlayer.pause();
                     musicDetailPauseBtn.setText("播放");
                     MusicState.changeState();
+                    cancelRotation();
                 }
             } else if (MusicState.state == MusicState.stop)
             {
@@ -68,9 +113,12 @@ public class MusicActivity extends AppCompatActivity
                     SearchActivity.mediaPlayer.start();
                     musicDetailPauseBtn.setText("暂停");
                     MusicState.changeState();
+                    rotation();
                 }
             }
         });
+
+
     }
 
     /**
@@ -88,7 +136,7 @@ public class MusicActivity extends AppCompatActivity
             Log.i("INFO", "音乐详情页退出");
             Intent intent = new Intent();
             setResult(1,intent);
-            finish();
+            this.finish();
         }
         return true;
     }

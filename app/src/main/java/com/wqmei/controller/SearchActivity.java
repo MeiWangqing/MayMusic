@@ -89,7 +89,7 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
     {
         songImgBottom.setOnClickListener((v)->
         {
-            if (currentMusic != null)
+            if (currentMusic != null&&currentMusic.getBitmap()!=null)
             {
                 Intent intent = new Intent(SearchActivity.this,MusicActivity.class);
                 startActivityForResult(intent, 1);
@@ -97,7 +97,7 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
         });
         songInfoTextBottom.setOnClickListener((v)->
         {
-            if (currentMusic != null)
+            if (currentMusic != null&&currentMusic.getBitmap()!=null)
             {
                 Intent intent = new Intent(SearchActivity.this, MusicActivity.class);
                 startActivityForResult(intent, 1);
@@ -161,7 +161,6 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
                             showToast(music);
                             resetPause();
                             setBottomInfo(music.getImageUrl(), music.getName() + " - " + music.getSinger());
-
                         } catch (IOException e)
                         {
                             e.printStackTrace();

@@ -3,7 +3,7 @@ package com.wqmei.entity;
 
 public class Music
 {
-    private int id;
+    private Integer id;
 
     private String name;
 
@@ -11,16 +11,19 @@ public class Music
 
     private String lyrics;
 
+    private String imageUrl;
+
     public Music()
     {
     }
 
-    public Music(int id, String name, String singer, String lyrics)
+    public Music(Integer id, String name, String singer, String lyrics, String imageUrl)
     {
         this.id = id;
         this.name = name;
         this.singer = singer;
         this.lyrics = lyrics;
+        this.imageUrl = imageUrl;
     }
 
     @Override
@@ -31,15 +34,26 @@ public class Music
                 ", name='" + name + '\'' +
                 ", singer='" + singer + '\'' +
                 ", lyrics='" + lyrics + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
 
-    public int getId()
+    public String getImageUrl()
+    {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl)
+    {
+        this.imageUrl = imageUrl;
+    }
+
+    public Integer getId()
     {
         return id;
     }
 
-    public void setId(int id)
+    public void setId(Integer id)
     {
         this.id = id;
     }

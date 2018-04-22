@@ -1,17 +1,18 @@
-package com.wqmei.util;
+package com.wqmei.service.impl;
 
+import android.os.Handler;
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.wqmei.controller.SearchActivity;
 import com.wqmei.entity.Music;
+import com.wqmei.service.SongService;
+import com.wqmei.util.SongUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -19,23 +20,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Handler;
 
 /**
  * author: wqmei
- * date: 2018/4/21 15:13
+ * date: 2018/4/22 9:36
  * description:
  */
-public class SongUtil
+public class SongServiceImpl implements SongService
 {
-
     /**
      * 查找歌曲
-     *
      * @param keyword
      * @return
      */
-    public static List<Music> getMusicList(String keyword, Handler handler)
+    @Override
+    public List<Music> getSongList(String keyword, RequestQueue requestQueue, SearchActivity searchActivity)
     {
         List<Music> musicList = new ArrayList<>(20);
         //组合请求
@@ -56,9 +55,8 @@ public class SongUtil
                         //获取歌曲信息
                         SongUtil.getSongInfo(jsonArray, musicList);
                         System.out.println("获取到全部歌曲信息");
-
                         System.out.println("准备设置ListView");
-                        SearchActivity.setListView(musicList);
+                        searchActivity.setListView(musicList);
                     }, error -> Log.e("TAG", error.getMessage(), error))
             {
                 @Override
@@ -75,7 +73,6 @@ public class SongUtil
         {
             e.printStackTrace();
         }
-        System.out.println("即将返回外部函数");
         return musicList;
     }
 
@@ -138,4 +135,5 @@ public class SongUtil
         stringBuffer.deleteCharAt(stringBuffer.length() - 1);
         return stringBuffer.toString();
     }
+
 }

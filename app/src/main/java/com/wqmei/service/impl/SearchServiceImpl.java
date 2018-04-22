@@ -1,6 +1,5 @@
 package com.wqmei.service.impl;
 
-import android.os.Handler;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONArray;
@@ -11,8 +10,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.wqmei.controller.SearchActivity;
 import com.wqmei.entity.Music;
-import com.wqmei.service.SongService;
-import com.wqmei.util.SongUtil;
+import com.wqmei.service.SearchService;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -26,7 +24,7 @@ import java.util.Map;
  * date: 2018/4/22 9:36
  * description:
  */
-public class SongServiceImpl implements SongService
+public class SearchServiceImpl implements SearchService
 {
     /**
      * 查找歌曲
@@ -34,7 +32,7 @@ public class SongServiceImpl implements SongService
      * @return
      */
     @Override
-    public List<Music> getSongList(String keyword, RequestQueue requestQueue, SearchActivity searchActivity)
+    public void searchSongsByKeyword(String keyword, RequestQueue requestQueue, SearchActivity searchActivity)
     {
         List<Music> musicList = new ArrayList<>(20);
         //组合请求
@@ -51,9 +49,9 @@ public class SongServiceImpl implements SongService
                         //解析响应
                         JSONObject jsonObject = JSONObject.parseObject(response);
                         //获取歌曲列表
-                        JSONArray jsonArray = ((JSONObject) jsonObject.get("result")).getJSONArray("songs");
+                        JSONArray jsonArray = jsonObject.getJSONObject("result").getJSONArray("songs");
                         //获取歌曲信息
-                        SongUtil.getSongInfo(jsonArray, musicList);
+                        getSongInfo(jsonArray, musicList);
                         System.out.println("获取到全部歌曲信息");
                         System.out.println("准备设置ListView");
                         searchActivity.setListView(musicList);
@@ -73,7 +71,6 @@ public class SongServiceImpl implements SongService
         {
             e.printStackTrace();
         }
-        return musicList;
     }
 
 
@@ -84,12 +81,12 @@ public class SongServiceImpl implements SongService
      * @param musicList
      * @return
      */
-    public static List<Music> getSongInfo(JSONArray jsonArray, List<Music> musicList)
+    private static List<Music> getSongInfo(JSONArray jsonArray, List<Music> musicList)
     {
-        System.out.println("进入解析函数");
+        Log.i("INFO","进入解析函数");
         for (int i = 0; i < jsonArray.size(); i++)
         {
-            System.out.println("解析第"+i+"条记录");
+            Log.i("INFO","正在解析第"+i+"条记录...");
             Music music = new Music();
             JSONObject song = jsonArray.getJSONObject(i);
             //设置id
@@ -102,7 +99,7 @@ public class SongServiceImpl implements SongService
             music.setSinger(getSingerNameFromJsonArray(song.getJSONArray("artists")));
             musicList.add(music);
         }
-        System.out.println("解析完成");
+        Log.i("INFO","解析完成");
         return musicList;
     }
 

@@ -30,6 +30,9 @@ import com.wqmei.service.SearchService;
 import com.wqmei.service.impl.SearchServiceImpl;
 import com.wqmei.template.MusicState;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -241,11 +244,11 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
             Bitmap bitmap = null;
             try
             {
-                URL url = new URL(imageUrl);
+                URL url = new URL(imageUrl+"?param=280y280");
                 //获取http连接
                 connection = (HttpURLConnection) url.openConnection();
                 //设置超时
-                connection.setConnectTimeout(6000);
+                connection.setConnectTimeout(60000);
                 //设置可以读取流
                 connection.setDoInput(true);
                 connection.setUseCaches(false);
@@ -253,10 +256,13 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
                 //connection.connect();
                 //获取数据流
                 inputStream = connection.getInputStream();
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
                 //读取文件
+                //bitmap = BitmapFactory.decodeStream(inputStream,null,options);
                 bitmap = BitmapFactory.decodeStream(inputStream);
-                //设置属性
-                currentMusic.setBitmap(bitmap);
             } catch (MalformedURLException e)
             {
                 e.printStackTrace();
@@ -280,6 +286,23 @@ public class SearchActivity extends AppCompatActivity implements MediaPlayer.OnB
                     }
                 }
             }
+
+            /*ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            int option = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, option, byteArrayOutputStream);
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+            //大于100k压缩
+            while ((bytes.length/1024)>100)
+            {
+                option = option/10;
+                bitmap.compress(Bitmap.CompressFormat.JPEG, option, byteArrayOutputStream);
+                bytes = byteArrayOutputStream.toByteArray();
+            }
+            bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);*/
+
+            //设置属性
+            currentMusic.setBitmap(bitmap);
+
             //发送请求给主线程
             Bitmap finalBitmap = bitmap;
             handler.post(() ->
